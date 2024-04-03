@@ -1,0 +1,150 @@
+import piplite
+await piplite.install(['folium'])
+await piplite.install(['pandas'])
+
+import folium
+import pandas as pd
+
+# Import folium MarkerCluster plugin
+from folium.plugins import MarkerCluster
+# Import folium MousePosition plugin
+from folium.plugins import MousePosition
+# Import folium DivIcon plugin
+from folium.features import DivIcon
+
+# Download and read the `spacex_launch_geo.csv`
+from js import fetch
+import io
+
+URL = 'https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DS0321EN-SkillsNetwork/datasets/spacex_launch_geo.csv'
+resp = await fetch(URL)
+spacex_csv_file = io.BytesIO((await resp.arrayBuffer()).to_py())
+spacex_df=pd.read_csv(spacex_csv_file)
+
+# Select relevant sub-columns: `Launch Site`, `Lat(Latitude)`, `Long(Longitude)`, `class`
+spacex_df = spacex_df[['Launch Site', 'Lat', 'Long', 'class']]
+launch_sites_df = spacex_df.groupby(['Launch Site'], as_index=False).first()
+launch_sites_df = launch_sites_df[['Launch Site', 'Lat', 'Long']]
+launch_sites_df
+
+# Start location is NASA Johnson Space Center
+nasa_coordinate = [29.559684888503615, -95.0830971930759]
+site_map = folium.Map(location=nasa_coordinate, zoom_start=10)
+
+# Create a blue circle at NASA Johnson Space Center's coordinate with a popup label showing its name
+circle = folium.Circle(nasa_coordinate, radius=1000, color='#d35400', fill=True).add_child(folium.Popup('NASA Johnson Space Center'))
+# Create a blue circle at NASA Johnson Space Center's coordinate with a icon showing its name
+marker = folium.map.Marker(
+    nasa_coordinate,
+    # Create an icon as a text label
+    icon=DivIcon(
+        icon_size=(20,20),
+        icon_anchor=(0,0),
+        html='<div style="font-size: 12; color:#d35400;"><b>%s</b></div>' % 'NASA JSC',
+        )
+    )
+site_map.add_child(circle)
+
+# Initial the map
+site_map = folium.Map(location=nasa_coordinate, zoom_start=5)
+# For each launch site, add a Circle object based on its coordinate (Lat, Long) values. In addition, add Launch site name as a popup label
+
+lc40 = [28.562302, -80.577356]
+slc40 = [28.563197 , -80.576820]
+ksc = [28.573255, -80.646895]
+vafb = [34.632834, -120.610745]
+site_map = folium.Map(location=nasa_coordinate, zoom_start=4)
+# Create a blue circle at LC40 coordinate with a popup label showing its name
+circle = folium.Circle(lc40, radius=100, color='#d35400', fill=True).add_child(folium.Popup('CCAFS LC-40'))
+# Create a blue circle at NASA Johnson Space Center's coordinate with a icon showing its name
+marker = folium.map.Marker(
+    lc40,
+    # Create an icon as a text label
+    icon=DivIcon(
+        icon_size=(20,20),
+        icon_anchor=(0,0),
+        html='<div style="font-size: 12; color:#d35400;"><b>%s</b></div>' % 'CCAFS LC-40',
+        )
+    )
+site_map.add_child(circle)
+site_map.add_child(marker)
+
+# Create a blue circle at SLC40 coordinate with a popup label showing its name
+circle = folium.Circle(slc40, radius=100, color='#d35400', fill=True).add_child(folium.Popup('CCAFS SLC-40'))
+# Create a blue circle at NASA Johnson Space Center's coordinate with a icon showing its name
+marker = folium.map.Marker(
+    slc40,
+    # Create an icon as a text label
+    icon=DivIcon(
+        icon_size=(20,20),
+        icon_anchor=(0,0),
+        html='<div style="font-size: 12; color:#d35400;"><b>%s</b></div>' % 'CCAFS SLC-40',
+        )
+    )
+site_map.add_child(circle)
+site_map.add_child(marker)
+
+# Create a blue circle at Kennedy Space Center LC-39A coordinate with a popup label showing its name
+circle = folium.Circle(ksc, radius=1000, color='#d35400', fill=True).add_child(folium.Popup('Kennedy Space Center LC-39A'))
+# Create a blue circle at NASA Johnson Space Center's coordinate with a icon showing its name
+marker = folium.map.Marker(
+    ksc,
+    # Create an icon as a text label
+    icon=DivIcon(
+        icon_size=(20,20),
+        icon_anchor=(0,0),
+        html='<div style="font-size: 12; color:#d35400;"><b>%s</b></div>' % 'KSC LC-39A',
+        )
+    )
+site_map.add_child(circle)
+site_map.add_child(marker)
+
+# Create a blue circle at VAFB SLC-4E coordinate with a popup label showing its name
+circle = folium.Circle(vafb, radius=1000, color='#d35400', fill=True).add_child(folium.Popup('VAFB SLC-4E'))
+# Create a blue circle at NASA Johnson Space Center's coordinate with a icon showing its name
+marker = folium.map.Marker(
+    vafb,
+    # Create an icon as a text label
+    icon=DivIcon(
+        icon_size=(20,20),
+        icon_anchor=(0,0),
+        html='<div style="font-size: 12; color:#d35400;"><b>%s</b></div>' % 'VAFB SLC-4E',
+        )
+    )
+site_map.add_child(circle)
+site_map.add_child(marker)
+
+spacex_df.tail(15)
+
+marker_cluster = MarkerCluster()
+
+
+
+
+# Apply a function to check the value of `class` column
+
+# If class=1, marker_color value will be green
+
+# If class=0, marker_color value will be red
+
+#spacex_df.tail(15)
+
+spacex_df.insert(2, "marker_color", "green")
+
+#spacex_df.tail()
+
+i=0
+
+max_index = len(spacex_df)
+
+while i < max_index:
+
+    if spacex_df.loc[i, "class"] == 0:
+
+        spacex_df["marker_color"] = "red"
+
+        i = i + 1
+
+    
+
+spacex_df.tail(15)
