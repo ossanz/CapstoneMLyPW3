@@ -145,6 +145,23 @@ while i < max_index:
 
         i = i + 1
 
-    
 
-spacex_df.tail(15)
+
+
+site_map.add_child(marker_cluster)
+
+# for each row in spacex_df data frame
+# create a Marker object with its coordinate
+# and customize the Marker's icon property to indicate if this launch was successed or failed, 
+# e.g., icon=folium.Icon(color='white', icon_color=row['marker_color']
+for index, record in spacex_df.iterrows():
+    marker = folium.map.Marker([spacex_df['Lat'][index], spacex_df['Long'][index]],
+    icon=folium.Icon(color='white', icon_color=spacex_df['marker_color'][index])).add_to(marker_cluster)                           
+    #marker_cluster.add_child(marker)
+
+site_map.add_child(marker_cluster)
+site_map
+
+
+
+
